@@ -1,15 +1,55 @@
 <template>
   <div class="container">
-    <router-link to="/assets"></router-link>
-    <router-link to="/members"></router-link>
+    <!-- Tab标签栏 -->
+    <div class="tabs">
+      <button 
+        class="tab" 
+        :class="{ active: currentTab === 'assets' }"
+        @click="currentTab = 'assets'"
+      >
+        资产
+      </button>
+      <button 
+        class="tab" 
+        :class="{ active: currentTab === 'members' }"
+        @click="currentTab = 'members'"
+      >
+        成员
+      </button>
+      <button 
+        class="tab" 
+        :class="{ active: currentTab === 'camera' }"
+        @click="currentTab = 'camera'"
+      >
+        拍照
+      </button>
+            <button 
+        class="tab" 
+        :class="{ active: currentTab === 'table' }"
+        @click="currentTab = 'table'"
+      >
+      表单
+      </button>
+    </div>
+
+    <!-- Tab内容区域，v-if切换组件 -->
+    <Assets v-if="currentTab === 'assets'" />
+    <Members v-if="currentTab === 'members'" />
+    <Camera v-if="currentTab === 'camera'" />
+    <Table v-if="currentTab === 'table'" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import Camera from './Camera.vue'
+import { ref } from 'vue'
+// 引入页面组件
+import Assets from '@/app/Assets.vue'
+import Members from '@/app/Members.vue'
+import Camera from '@/app/Camera.vue'
+import Table from '@/app/Table.vue'
 
-
+// 当前激活的tab，默认打开资产页
+const currentTab = ref('assets')
 </script>
 <style scoped>
 .container {

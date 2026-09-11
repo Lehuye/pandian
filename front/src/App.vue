@@ -1,5 +1,5 @@
 <script setup>
-import Pandian  from '@/app/Assets.vue'
+import Pandian  from '@/app/Main.vue'
 </script>
 
 <template>

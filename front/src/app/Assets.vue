@@ -15,6 +15,7 @@
         >
           <div class="member-info">
             <div class="name">{{ m["財產編號"] }}</div>
+            <div class="name">{{ m["序號"] }} - {{ m["初盤結果"] }} </div>
             <div class="meta">資產名稱：{{ m["名稱"] }}</div>
             <div class="meta">保管人：{{ m["保管人"] }}</div>
             <div class="meta">存放位置：{{ m["存放位置名稱"] }}</div>
