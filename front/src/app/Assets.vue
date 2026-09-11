@@ -24,9 +24,9 @@
         </li>
       </ul>
     </div>
-    <Camera
+    <CameraAsset
       :visible="cameraVisible"
-      :member="currentMember"
+      :asset="acurrentAsset"
       @close="cameraVisible = false"
       @upload="handleUpload"
     />
@@ -35,31 +35,30 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import Camera from './Camera.vue'
+import CameraAsset from './CameraAsset.vue'
 import rawAssetData from '@/assets/data'
 
 const searchKey = ref('')
 const cameraVisible = ref(false)
-const currentMember = ref(null)
-const memberList = ref(rawAssetData)
-
+const acurrentAsset = ref(null)
+const assetList = ref(rawAssetData)
 const tableData = computed(() => {
-  if (!searchKey.value) return memberList.value
+  if (!searchKey.value) return assetList.value
   const kw = searchKey.value.toLowerCase()
-  return memberList.value.filter(item =>
+  return assetList.value.filter(item =>
     Object.values(item).some(v => String(v).toLowerCase().includes(kw))
   )
 })
 
 function openCamera(member) {
-  currentMember.value = member
+  acurrentAsset.value = member
   cameraVisible.value = true
 }
 
 // 拍照後回寫圖片到該資產src
 function handleUpload(payload) {
   console.log('待上传数据', payload)
-  const target = memberList.value.find(item => item.uuid === payload.member.uuid)
+  const target = assetList.value.find(item => item.uuid === payload.member.uuid)
   if (target) {
     target.src = payload.base64
   }
