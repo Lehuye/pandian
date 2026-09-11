@@ -1,0 +1,148 @@
+:root {
+  /* ==========================================================================
+     1. 色彩系统 (Color System)
+     ========================================================================== */
+  
+  /* --- 主色调 & 品牌 Accent Colors --- */
+  --color-primary: #7c3aed;             /* 主色/品牌色 (Violet 600) */
+  --color-primary-hover: #6d28d9;       /* 主色悬停 */
+  --color-primary-active: #5b21b6;      /* 主色激活/按下 */
+  --color-primary-alpha-10: rgba(124, 58, 237, 0.1);
+  --color-primary-alpha-20: rgba(124, 58, 237, 0.2);
+
+  /* --- 背景色系 Backgrounds --- */
+  --bg-base: #0a0a0c;                   /* 全局根背景 (最暗) */
+  --bg-surface-1: #121215;              /* 第一层容器 (如 Sidebar, Main Wrapper) */
+  --bg-surface-2: #1a1a1e;              /* 第二层容器 (如 Card, Table row) */
+  --bg-surface-3: #242429;              /* 第三层容器 (如 Modal, Popover) */
+  --bg-surface-hover: #2d2d34;          /* 列表/卡片悬停背景 */
+  --bg-surface-active: #36363f;         /* 选中/激活态背景 */
+
+  /* --- 前景色/文本色 Text & Content --- */
+  --text-primary: #f4f4f5;             /* 主要文本 (高对比度) */
+  --text-secondary: #a1a1aa;           /* 次要文本 (描述、次要信息) */
+  --text-tertiary: #71717a;            /* 第三级文本 (占位符、禁用态) */
+  --text-inverse: #09090b;             /* 反色文本 (用于高亮/浅色背景按钮上) */
+  --text-link: #a78bfa;                /* 链接颜色 */
+  --text-link-hover: #c4b5fd;          /* 链接悬停 */
+
+  /* --- 边框与分割线 Borders & Dividers --- */
+  --border-subtle: rgba(255, 255, 255, 0.08);  /* 微弱边框 (分割线) */
+  --border-default: rgba(255, 255, 255, 0.15); /* 默认组件边框 (Input, Card) */
+  --border-strong: rgba(255, 255, 255, 0.3);  /* 强调/聚焦边框 */
+  --border-primary: var(--color-primary);      /* 主色边框 */
+
+  /* --- 状态色 Status Colors --- */
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.15);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.15);
+  --color-info: #3b82f6;
+  --color-info-bg: rgba(59, 130, 246, 0.15);
+
+  /* ==========================================================================
+     2. 毛玻璃与透明度 (Glassmorphism & Transparency)
+     ========================================================================== */
+  
+  /* --- 毛玻璃背景 --- */
+  --glass-bg-base: rgba(10, 10, 12, 0.75);      /* 基础毛玻璃背景 (如 App Header) */
+  --glass-bg-surface: rgba(26, 26, 30, 0.65);   /* 卡片/弹窗毛玻璃背景 */
+  --glass-border: rgba(255, 255, 255, 0.12);    /* 毛玻璃边框高光 */
+
+  /* --- 模糊高斯滤镜 Backdrop Blur --- */
+  --blur-sm: blur(4px);
+  --blur-md: blur(8px);
+  --blur-lg: blur(16px);
+  --blur-xl: blur(24px);
+
+  /* ==========================================================================
+     3. 字体与排版 (Typography)
+     ========================================================================== */
+  
+  /* --- 字体系列 --- */
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* --- 字号尺寸 --- */
+  --font-size-xs: 0.75rem;    /* 12px - 标签、提示 */
+  --font-size-sm: 0.875rem;   /* 14px - 次要正文、按钮 */
+  --font-size-base: 1rem;     /* 16px - 默认正文 */
+  --font-size-lg: 1.125rem;   /* 18px - 小标题 */
+  --font-size-xl: 1.25rem;    /* 20px - 卡片标题 */
+  --font-size-2xl: 1.5rem;    /* 24px - 页面一级标题 */
+  --font-size-3xl: 1.875rem;  /* 30px - 局部 Banner 标题 */
+  --font-size-4xl: 2.25rem;   /* 36px - 大展示字 */
+
+  /* --- 字重 --- */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* --- 行高 --- */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ==========================================================================
+     4. 间距系统 (Spacing) - 基于 4px/8px 网格
+     ========================================================================== */
+  
+  --space-0-5: 0.125rem; /* 2px */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ==========================================================================
+     5. 圆角系统 (Border Radius)
+     ========================================================================== */
+  
+  --radius-xs: 0.125rem;  /* 2px */
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.375rem;  /* 6px - 默认按钮、输入框 */
+  --radius-lg: 0.5rem;    /* 8px - 卡片 */
+  --radius-xl: 0.75rem;   /* 12px - 模态框 */
+  --radius-2xl: 1rem;     /* 16px - 大气容器 */
+  --radius-full: 9999px;  /* 丸状/圆形 */
+
+  /* ==========================================================================
+     6. 阴影系统 (Shadows & Glows)
+     ========================================================================== */
+  
+  /* --- 传统阴影 --- */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+
+  /* --- 暗黑霓虹发光特效 (Dark Mode Glows) --- */
+  --glow-primary: 0 0 20px var(--color-primary-alpha-20);
+  --glow-error: 0 0 20px rgba(239, 68, 68, 0.2);
+
+  /* ==========================================================================
+     7. 过渡与层级 (Transitions & Z-Index)
+     ========================================================================== */
+  
+  /* --- 动画过渡 --- */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- 层级 --- */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
