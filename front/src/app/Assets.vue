@@ -65,6 +65,10 @@ function handleUpload(payload) {
   }
   cameraVisible.value = false
 }
+
+function getAssetById(assetId){
+ 
+}
 </script>
 <style scoped>
 .container {

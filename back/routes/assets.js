@@ -46,7 +46,14 @@ router.get('/:assetId', function (req, res, next) {
   }
   res.json({ code: 200, data: asset });
 });
-
+//router.get('/:assetUuid', function (req, res, next) {
+//  const { assetUuid } = req.params;
+//  const photos = assetList.filter(item => item.assetUuid === assetUuid);
+//  res.json({
+//    code: 200,
+//    data: photos // 数组内每一项都包含 originalFileName / webpFileName
+//  });
+//});
 /**
  * POST /assets/upload
  * 上传图片资产：保存原图 + webp压缩图
@@ -54,18 +61,18 @@ router.get('/:assetId', function (req, res, next) {
  */
 router.post('/upload', upload.single('assetFile'), async function (req, res, next) {
   try {
-    const { assetUuid, remark = '' } = req.body;
+    const { assetId, remark = '' } = req.body;
     if (!req.file) {
       return res.status(400).json({ code: 400, msg: '请选择图片文件' });
     }
-    if (!assetUuid) {
+    if (!assetId) {
       return res.status(400).json({ code: 400, msg: 'assetUuid不能为空' });
     }
     // 文件名只用assetUuid+时间戳，不要拼接remark，防止中文/特殊字符报错
     const ext = path.extname(req.file.originalname);
-    const baseName = `${assetUuid}_${Date.now()}`;
-    const originalFileName = `${assetUuid}_${baseName}_${remark}_${ext}`;
-    const webpFileName = `${assetUuid}_${baseName}_${remark}_${ext}` + '.webp';
+    const baseName = `${assetId}_${Date.now()}`;
+    const originalFileName = `${assetId}_${baseName}_${remark}_${ext}`;
+    const webpFileName = `${assetId}_${baseName}_${remark}_${ext}` + '.webp';
     const originalSavePath = path.join(originalDir, originalFileName);
     const webpSavePath = path.join(webpDir, webpFileName);
 
@@ -82,8 +89,8 @@ router.post('/upload', upload.single('assetFile'), async function (req, res, nex
     const webpUrl = `/assets/webp/${webpFileName}`;
     console.log(originalUrl,webpUrl)
     const newAsset = {
-      assetId: assetIdSeq++,
-      assetUuid,
+      //assetId: assetIdSeq++,
+      assetId,
       remark,
       originalUrl,
       webpUrl,

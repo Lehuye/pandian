@@ -277,7 +277,7 @@ async function submitUpload() {
     );
     const formData = new FormData();
     formData.append("assetFile", file);
-    formData.append("assetUuid", props.asset["財產編號"]);
+    formData.append("assetId", props.asset["財產編號"]);
     // 使用用户输入的备注，为空则用默认文字
     formData.append("remark", userRemark.value || "资产照片");
     const res = await uploadAsset(formData);
