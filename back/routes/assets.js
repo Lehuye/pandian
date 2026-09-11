@@ -64,8 +64,8 @@ router.post('/upload', upload.single('assetFile'), async function (req, res, nex
     // 文件名只用assetUuid+时间戳，不要拼接remark，防止中文/特殊字符报错
     const ext = path.extname(req.file.originalname);
     const baseName = `${assetUuid}_${Date.now()}`;
-    const originalFileName = assetUuid + baseName + remark + ext;
-    const webpFileName = baseName + '.webp';
+    const originalFileName = `${assetUuid}_${baseName}_${remark}_${ext}`;
+    const webpFileName = `${assetUuid}_${baseName}_${remark}_${ext}` + '.webp';
     const originalSavePath = path.join(originalDir, originalFileName);
     const webpSavePath = path.join(webpDir, webpFileName);
 
@@ -80,6 +80,7 @@ router.post('/upload', upload.single('assetFile'), async function (req, res, nex
     // 静态访问地址
     const originalUrl = `/assets/original/${originalFileName}`;
     const webpUrl = `/assets/webp/${webpFileName}`;
+    conso
     const newAsset = {
       assetId: assetIdSeq++,
       assetUuid,

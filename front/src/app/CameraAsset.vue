@@ -281,6 +281,7 @@ async function submitUpload() {
     // 使用用户输入的备注，为空则用默认文字
     formData.append("remark", userRemark.value || "资产照片");
     const res = await uploadAsset(formData);
+    console.log("提交的内容：",formData)
     emit("uploadSuccess", res.data);
   } catch (err) {
     console.error("上传异常：", err);
