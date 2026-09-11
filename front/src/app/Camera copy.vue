@@ -1,15 +1,17 @@
 <template>
   <div v-if="visible" class="camera-modal" @click.self="handleClose">
+   
     <div class="camera-wrap">
       <div class="scan-line"></div>
       <h3 class="cyber-title">
         <span class="title-bar"></span>
-        拍摄头像 · {{ member.name }}
+       {{ member['序號'] }}
         <span class="title-bar"></span>
       </h3>
       <div class="view-box">
+        <!-- Electron端：实时video预览；手机端不会渲染video，直接走原生相机 -->
         <video
-          v-if="!photoBase64"
+          v-if="!photoBase64 && isElectron"
           ref="videoRef"
           autoplay
           playsinline
@@ -29,6 +31,15 @@
         </div>
       </div>
       <canvas ref="canvasRef" class="canvas-hide"></canvas>
+      <!-- 手机端原生相机隐藏input -->
+      <input
+        ref="mobileFileRef"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        style="display: none"
+        @change="onMobilePhotoSelect"
+      />
       <div class="info-panel">
         <div class="info-title">
           <span class="dot"></span>
@@ -53,9 +64,20 @@
           </div>
         </div>
       </div>
+
+      <!-- ==========新增备注输入框，仅拍照完成后显示========== -->
+      <div v-if="photoBase64" class="remark-panel">
+        <label>备注</label>
+        <textarea
+          v-model="userRemark"
+          placeholder="请输入备注信息"
+          rows="2"
+        ></textarea>
+      </div>
+
       <div class="btn-group">
         <template v-if="!photoBase64">
-          <button class="cyber-btn btn-photo" @click="takePhoto">
+          <button class="cyber-btn btn-photo" @click="triggerCamera">
             <span>拍照</span>
             <i class="line left"></i>
             <i class="line right"></i>
@@ -100,28 +122,37 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['close', 'uploadSuccess', 'uploadError'])
-
 const videoRef = ref(null)
 const canvasRef = ref(null)
+const mobileFileRef = ref(null)
 let mediaStream = null
 const photoBase64 = ref('')
 const uploading = ref(false)
+// 新增备注变量
+const userRemark = ref('')
 
+// 环境判断
+const isElectron = navigator.userAgent.toLowerCase().includes('electron')
+const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent)
 watch(
   () => props.visible,
   async (val) => {
     if (val) {
       photoBase64.value = ''
       uploading.value = false
-      await openCamera()
+      userRemark.value = '' // 打开弹窗清空备注
+      if(isElectron){
+        await openCamera()
+      }
     } else {
       stopCamera()
       photoBase64.value = ''
+      userRemark.value = '' // 关闭弹窗清空备注
     }
   }
 )
+// Electron桌面端：WebRTC实时预览
 async function openCamera() {
-  const isElectron = navigator.userAgent.toLowerCase().includes('electron')
   try {
     mediaStream = await navigator.mediaDevices.getUserMedia({
       video: {
@@ -134,15 +165,20 @@ async function openCamera() {
     videoRef.value.srcObject = mediaStream
   } catch (err) {
     console.error('摄像头异常：', err)
-    if(isElectron){
-      alert('摄像头打开失败！请检查：\n1.Windows隐私设置已开启摄像头权限给Electron\n2.没有其他软件正在占用摄像头\n3.USB摄像头驱动正常')
-    }else{
-      alert('摄像头打开失败，请授予摄像头权限，移动端必须使用HTTPS访问')
-    }
+    alert('摄像头打开失败！请检查：\n1.Windows隐私设置已开启摄像头权限给Electron\n2.没有其他软件正在占用摄像头\n3.USB摄像头驱动正常')
     emit('close')
   }
 }
-
+// 统一拍照按钮入口：区分环境
+function triggerCamera() {
+  if(isElectron){
+    takePhoto()
+  }else if(isMobile){
+    // 手机端唤起原生相机
+    mobileFileRef.value.click()
+  }
+}
+// Electron截图（canvas捕获video画面）
 function takePhoto() {
   const video = videoRef.value
   const canvas = canvasRef.value
@@ -152,15 +188,27 @@ function takePhoto() {
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
   photoBase64.value = canvas.toDataURL('image/jpeg', 0.85)
 }
+// 手机原生相机拍完回调，转base64，和原有逻辑打通
+function onMobilePhotoSelect(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => {
+    photoBase64.value = ev.target.result
+  }
+  reader.readAsDataURL(file)
+  // 清空input，保证重拍可以重复选择同一张
+  e.target.value = ''
+}
 function reTake() {
   photoBase64.value = ''
+  userRemark.value = '' //重拍清空备注
   nextTick(() => {
-    if (videoRef.value) {
+    if (isElectron && videoRef.value) {
       videoRef.value.play().catch(e => console.log('play ignore', e))
     }
   })
 }
-
 function base64ToFile(base64Str, fileName) {
   const arr = base64Str.split(',')
   const mime = arr[0].match(/:(.*?);/)[1]
@@ -172,7 +220,6 @@ function base64ToFile(base64Str, fileName) {
   }
   return new File([u8arr], fileName, { type: mime })
 }
-
 async function submitUpload() {
   if (uploading.value) return
   uploading.value = true
@@ -181,8 +228,8 @@ async function submitUpload() {
     const formData = new FormData()
     formData.append('assetFile', file)
     formData.append('memberUuid', props.member.uuid)
-    formData.append('remark', '成员头像资产')
-
+    // 使用用户输入的备注，为空则用默认文字
+    formData.append('remark', userRemark.value || '成员头像资产')
     const res = await uploadAsset(formData)
     emit('uploadSuccess', res.data)
   } catch (err) {
@@ -192,7 +239,6 @@ async function submitUpload() {
     uploading.value = false
   }
 }
-
 function handleClose() {
   stopCamera()
   emit('close')

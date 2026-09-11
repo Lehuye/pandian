@@ -1,10 +1,11 @@
 <template>
   <div v-if="visible" class="camera-modal" @click.self="handleClose">
+    
     <div class="camera-wrap">
       <div class="scan-line"></div>
       <h3 class="cyber-title">
         <span class="title-bar"></span>
-        拍摄头像 · {{ member.name }}
+        拍摄资产照片 · {{ asset['序號'] }}
         <span class="title-bar"></span>
       </h3>
       <div class="view-box">
@@ -42,38 +43,88 @@
       <div class="info-panel">
         <div class="info-title">
           <span class="dot"></span>
-          成员信息 / MEMBER INFO
+          資產資訊 / ASSET INFO
         </div>
         <div class="info-grid">
           <div class="info-item">
-            <label>姓名</label>
-            <span>{{ member.name }}</span>
+            <label>序號</label>
+            <span>{{ asset['序號'] }}</span>
           </div>
           <div class="info-item">
-            <label>工号</label>
-            <span>{{ member.jobNumber }}</span>
+            <label>PO</label>
+            <span>{{ asset['PO'] }}</span>
           </div>
           <div class="info-item">
-            <label>工位</label>
-            <span>{{ member.station }}</span>
+            <label>入帳日期</label>
+            <span>{{ asset['入帳日期'] }}</span>
           </div>
           <div class="info-item">
-            <label>位置</label>
-            <span>{{ member.location }}</span>
+            <label>資產分類</label>
+            <span>{{ asset['資產分類'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>保管部門</label>
+            <span>{{ asset['保管部門'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>保管人</label>
+            <span>{{ asset['保管人'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>管理員</label>
+            <span>{{ asset['管理員'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>名稱</label>
+            <span>{{ asset['名稱'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>規格型號</label>
+            <span>{{ asset['規格型號'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>存放位置名稱</label>
+            <span>{{ asset['存放位置名稱'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>狀態</label>
+            <span>{{ asset['狀態'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>財產編號</label>
+            <span>{{ asset['財產編號'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>管制編號</label>
+            <span>{{ asset['管制編號'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>初盤結果</label>
+            <span>{{ asset['初盤結果'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>複盤結果</label>
+            <span>{{ asset['複盤結果'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>抽盤結果</label>
+            <span>{{ asset['抽盤結果'] }}</span>
+          </div>
+          <div class="info-item">
+            <label>備註</label>
+            <span>{{ asset['備註'] }}</span>
           </div>
         </div>
       </div>
-
       <!-- ==========新增备注输入框，仅拍照完成后显示========== -->
       <div v-if="photoBase64" class="remark-panel">
-        <label>备注</label>
+        <label>本次拍照備註</label>
         <textarea
           v-model="userRemark"
-          placeholder="请输入备注信息"
+          placeholder="輸入本次拍照備註"
           rows="2"
         ></textarea>
       </div>
-
       <div class="btn-group">
         <template v-if="!photoBase64">
           <button class="cyber-btn btn-photo" @click="triggerCamera">
@@ -114,7 +165,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  member: {
+  asset: {
     type: Object,
     required: true
   }
@@ -128,7 +179,6 @@ const photoBase64 = ref('')
 const uploading = ref(false)
 // 新增备注变量
 const userRemark = ref('')
-
 // 环境判断
 const isElectron = navigator.userAgent.toLowerCase().includes('electron')
 const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent)
@@ -222,12 +272,13 @@ async function submitUpload() {
   if (uploading.value) return
   uploading.value = true
   try {
-    const file = base64ToFile(photoBase64.value, `${props.member.uuid}.jpg`)
+    // 用財產編號做文件名，或者asset['序號']，你可以自行改
+    const file = base64ToFile(photoBase64.value, `${props.asset['財產編號']}.jpg`)
     const formData = new FormData()
     formData.append('assetFile', file)
-    formData.append('memberUuid', props.member.uuid)
+    formData.append('assetUuid', props.asset['財產編號'])
     // 使用用户输入的备注，为空则用默认文字
-    formData.append('remark', userRemark.value || '成员头像资产')
+    formData.append('remark', userRemark.value || '资产照片')
     const res = await uploadAsset(formData)
     emit('uploadSuccess', res.data)
   } catch (err) {

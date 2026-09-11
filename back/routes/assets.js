@@ -54,26 +54,23 @@ router.get('/:assetId', function (req, res, next) {
  */
 router.post('/upload', upload.single('assetFile'), async function (req, res, next) {
   try {
-    const { memberUuid, remark = '' } = req.body;
+    const { assetUuid, remark = '' } = req.body;
     if (!req.file) {
       return res.status(400).json({ code: 400, msg: '请选择图片文件' });
     }
-    if (!memberUuid) {
-      return res.status(400).json({ code: 400, msg: 'memberUuid不能为空' });
+    if (!assetUuid) {
+      return res.status(400).json({ code: 400, msg: 'assetUuid不能为空' });
     }
-
+    // 文件名只用assetUuid+时间戳，不要拼接remark，防止中文/特殊字符报错
     const ext = path.extname(req.file.originalname);
-    // 文件名改为 memberUuid + 时间戳
-    const baseName = `${memberUuid}_${Date.now()}`;
-    const originalFileName = baseName + ext;
+    const baseName = `${assetUuid}_${Date.now()}`;
+    const originalFileName = assetUuid + baseName + remark + ext;
     const webpFileName = baseName + '.webp';
-
     const originalSavePath = path.join(originalDir, originalFileName);
     const webpSavePath = path.join(webpDir, webpFileName);
 
     // 保存原图
     fs.writeFileSync(originalSavePath, req.file.buffer);
-
     // sharp压缩转webp，宽最大1200，质量80
     await sharp(req.file.buffer)
       .resize({ width: 1200, withoutEnlargement: true })
@@ -81,12 +78,11 @@ router.post('/upload', upload.single('assetFile'), async function (req, res, nex
       .toFile(webpSavePath);
 
     // 静态访问地址
-    const originalUrl = `/assets/original/${originalFileName}-${remark}`;
-    const webpUrl = `/assets/webp/${webpFileName}-${remark}`;
-
+    const originalUrl = `/assets/original/${originalFileName}`;
+    const webpUrl = `/assets/webp/${webpFileName}`;
     const newAsset = {
       assetId: assetIdSeq++,
-      memberUuid,
+      assetUuid,
       remark,
       originalUrl,
       webpUrl,
@@ -95,7 +91,6 @@ router.post('/upload', upload.single('assetFile'), async function (req, res, nex
       createTime: new Date().toISOString()
     };
     assetList.push(newAsset);
-
     res.json({
       code: 200,
       msg: '上传成功',
