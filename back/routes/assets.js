@@ -80,7 +80,7 @@ router.post('/upload', upload.single('assetFile'), async function (req, res, nex
     // 静态访问地址
     const originalUrl = `/assets/original/${originalFileName}`;
     const webpUrl = `/assets/webp/${webpFileName}`;
-    conso
+    console.log(originalUrl,webpUrl)
     const newAsset = {
       assetId: assetIdSeq++,
       assetUuid,
