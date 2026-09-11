@@ -35,7 +35,6 @@
     <!-- Tab内容区域，v-if切换组件 -->
     <Assets v-if="currentTab === 'assets'" />
     <Members v-if="currentTab === 'members'" />
-    <Camera v-if="currentTab === 'camera'" />
     <Table v-if="currentTab === 'table'" />
   </div>
 </template>
@@ -45,7 +44,6 @@ import { ref } from 'vue'
 // 引入页面组件
 import Assets from '@/app/Assets.vue'
 import Members from '@/app/Members.vue'
-import Camera from '@/app/Camera.vue'
 import Table from '@/app/Table.vue'
 
 // 当前激活的tab，默认打开资产页

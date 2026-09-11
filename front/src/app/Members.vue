@@ -29,7 +29,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import Camera from './Camera.vue'
+import Camera from './CameraMember.vue'
 
 const searchKey = ref('')
 const cameraVisible = ref(false)
