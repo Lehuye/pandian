@@ -81,8 +81,8 @@ router.post('/upload', upload.single('assetFile'), async function (req, res, nex
       .toFile(webpSavePath);
 
     // 静态访问地址
-    const originalUrl = `/assets/original/${originalFileName}`;
-    const webpUrl = `/assets/webp/${webpFileName}`;
+    const originalUrl = `/assets/original/${originalFileName}-${remark}`;
+    const webpUrl = `/assets/webp/${webpFileName}-${remark}`;
 
     const newAsset = {
       assetId: assetIdSeq++,
