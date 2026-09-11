@@ -8,9 +8,8 @@
         <span class="title-bar"></span>
       </h3>
       <div class="view-box">
-        <!-- Electron端：实时video预览；手机端不会渲染video，直接走原生相机 -->
         <video
-          v-if="!photoBase64 && isElectron"
+          v-if="!photoBase64"
           ref="videoRef"
           autoplay
           playsinline
@@ -30,15 +29,6 @@
         </div>
       </div>
       <canvas ref="canvasRef" class="canvas-hide"></canvas>
-      <!-- 手机端原生相机隐藏input -->
-      <input
-        ref="mobileFileRef"
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style="display: none"
-        @change="onMobilePhotoSelect"
-      />
       <div class="info-panel">
         <div class="info-title">
           <span class="dot"></span>
@@ -65,7 +55,7 @@
       </div>
       <div class="btn-group">
         <template v-if="!photoBase64">
-          <button class="cyber-btn btn-photo" @click="triggerCamera">
+          <button class="cyber-btn btn-photo" @click="takePhoto">
             <span>拍照</span>
             <i class="line left"></i>
             <i class="line right"></i>
@@ -113,14 +103,9 @@ const emit = defineEmits(['close', 'uploadSuccess', 'uploadError'])
 
 const videoRef = ref(null)
 const canvasRef = ref(null)
-const mobileFileRef = ref(null)
 let mediaStream = null
 const photoBase64 = ref('')
 const uploading = ref(false)
-
-// 环境判断
-const isElectron = navigator.userAgent.toLowerCase().includes('electron')
-const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent)
 
 watch(
   () => props.visible,
@@ -128,18 +113,15 @@ watch(
     if (val) {
       photoBase64.value = ''
       uploading.value = false
-      if(isElectron){
-        await openCamera()
-      }
+      await openCamera()
     } else {
       stopCamera()
       photoBase64.value = ''
     }
   }
 )
-
-// Electron桌面端：WebRTC实时预览
 async function openCamera() {
+  const isElectron = navigator.userAgent.toLowerCase().includes('electron')
   try {
     mediaStream = await navigator.mediaDevices.getUserMedia({
       video: {
@@ -152,22 +134,15 @@ async function openCamera() {
     videoRef.value.srcObject = mediaStream
   } catch (err) {
     console.error('摄像头异常：', err)
-    alert('摄像头打开失败！请检查：\n1.Windows隐私设置已开启摄像头权限给Electron\n2.没有其他软件正在占用摄像头\n3.USB摄像头驱动正常')
+    if(isElectron){
+      alert('摄像头打开失败！请检查：\n1.Windows隐私设置已开启摄像头权限给Electron\n2.没有其他软件正在占用摄像头\n3.USB摄像头驱动正常')
+    }else{
+      alert('摄像头打开失败，请授予摄像头权限，移动端必须使用HTTPS访问')
+    }
     emit('close')
   }
 }
 
-// 统一拍照按钮入口：区分环境
-function triggerCamera() {
-  if(isElectron){
-    takePhoto()
-  }else if(isMobile){
-    // 手机端唤起原生相机
-    mobileFileRef.value.click()
-  }
-}
-
-// Electron截图（canvas捕获video画面）
 function takePhoto() {
   const video = videoRef.value
   const canvas = canvasRef.value
@@ -177,24 +152,10 @@ function takePhoto() {
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
   photoBase64.value = canvas.toDataURL('image/jpeg', 0.85)
 }
-
-// 手机原生相机拍完回调，转base64，和原有逻辑打通
-function onMobilePhotoSelect(e) {
-  const file = e.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = (ev) => {
-    photoBase64.value = ev.target.result
-  }
-  reader.readAsDataURL(file)
-  // 清空input，保证重拍可以重复选择同一张
-  e.target.value = ''
-}
-
 function reTake() {
   photoBase64.value = ''
   nextTick(() => {
-    if (isElectron && videoRef.value) {
+    if (videoRef.value) {
       videoRef.value.play().catch(e => console.log('play ignore', e))
     }
   })
@@ -221,6 +182,7 @@ async function submitUpload() {
     formData.append('assetFile', file)
     formData.append('memberUuid', props.member.uuid)
     formData.append('remark', '成员头像资产')
+
     const res = await uploadAsset(formData)
     emit('uploadSuccess', res.data)
   } catch (err) {
@@ -235,16 +197,15 @@ function handleClose() {
   stopCamera()
   emit('close')
 }
-
 function stopCamera() {
   if (mediaStream) {
     mediaStream.getTracks().forEach(track => track.stop())
     mediaStream = null
   }
 }
-
 onUnmounted(() => stopCamera())
 </script>
+
 <style scoped>
 :root {
   --bg-modal: rgba(8, 12, 20, 0.75);
