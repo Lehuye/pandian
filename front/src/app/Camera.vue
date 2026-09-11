@@ -120,6 +120,29 @@ watch(
     }
   }
 )
+//async function openCamera() {
+//  const isElectron = navigator.userAgent.toLowerCase().includes('electron')
+//  try {
+//    mediaStream = await navigator.mediaDevices.getUserMedia({
+//      video: {
+//        facingMode: 'environment',
+//        width: { ideal: 1280 },
+//        height: { ideal: 720 }
+//      },
+//      audio: false
+//    })
+//    videoRef.value.srcObject = mediaStream
+//  } catch (err) {
+//    console.error('摄像头异常：', err)
+//    if(isElectron){
+//      alert('摄像头打开失败！请检查：\n1.Windows隐私设置已开启摄像头权限给Electron\n2.没有其他软件正在占用摄像头\n3.USB摄像头驱动正常')
+//    }else{
+//      alert('摄像头打开失败，请授予摄像头权限，移动端必须使用HTTPS访问')
+//    }
+//    emit('close')
+//  }
+//}
+
 async function openCamera() {
   const isElectron = navigator.userAgent.toLowerCase().includes('electron')
   try {
@@ -133,15 +156,16 @@ async function openCamera() {
     })
     videoRef.value.srcObject = mediaStream
   } catch (err) {
-    console.error('摄像头异常：', err)
+    console.error('摄像头错误详情：', err)
     if(isElectron){
-      alert('摄像头打开失败！请检查：\n1.Windows隐私设置已开启摄像头权限给Electron\n2.没有其他软件正在占用摄像头\n3.USB摄像头驱动正常')
+      alert('摄像头打开失败！\n1.检查Windows隐私设置是否允许Electron访问相机\n2.确认没有其他软件占用摄像头')
     }else{
       alert('摄像头打开失败，请授予摄像头权限，移动端必须使用HTTPS访问')
     }
     emit('close')
   }
 }
+
 
 function takePhoto() {
   const video = videoRef.value

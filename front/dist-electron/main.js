@@ -17,11 +17,20 @@ function createWindow() {
       preload: path.join(__dirname$1, "preload.mjs")
     }
   });
+  win.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (permission === "media" || permission === "camera") {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
   win.webContents.on("did-finish-load", () => {
     win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
   });
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL);
+    let devUrl = VITE_DEV_SERVER_URL;
+    devUrl = devUrl.replace("127.0.0.1", "localhost");
+    win.loadURL(devUrl);
   } else {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }

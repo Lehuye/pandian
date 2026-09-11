@@ -2,12 +2,12 @@ import { defineConfig } from 'vite'
 import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
 import vue from '@vitejs/plugin-vue'
-
+import basicSsl from '@vitejs/plugin-basic-ssl'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-
+    basicSsl(), // 本地自签名HTTPS
     electron({
       main: {
         // Shortcut of `build.lib.entry`.
@@ -33,5 +33,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src')
     }
   },
+server: {
+  host: '0.0.0.0',
+  port: 5173,
+  https: false // 关掉！不要basicSsl
+}
 
 })
